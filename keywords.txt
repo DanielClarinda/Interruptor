@@ -1,0 +1,3 @@
+Interruptor KEYWORD1
+monitoraMudanca KEYWORD2
+estaAcionado  KEYWORD2
