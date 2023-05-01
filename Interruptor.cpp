@@ -1,36 +1,43 @@
 #include "Interruptor.h"
 
-Interruptor::Interruptor(byte pin, byte mode, bool colector, unsigned int deBounceTime) {
-  _pino = pin;
-  pinMode(pin, mode);
+// Private properties
+// byte _pin = 0;
+// bool _currentState = LOW;
+// bool _triggersWith = LOW;                    // Contact logic
+// bool _lastSign = LOW;                        // deBounce control
+// unsigned long _lastSignTime = 0;             // deBounce control
+// unsigned int _filter = 0;                    // deBounce Time
 
-  _tempoConsiderarMudanca = deBounceTime;
+Interruptor::Interruptor(byte pin, byte inputMode, bool contactLogic, unsigned int deBounceTime) {
+  _pin = pin;
+  pinMode(_pin, inputMode);
+  _filter = deBounceTime;
 
-  if(mode == INPUT) _estado = LOW;
-  else if(mode == INPUT_PULLUP) _estado = HIGH;
-
-  if(colector == NC) _estado = !_estado;                        // coletor normalmente fechado é lógica inversa
-
-  _ultimoSinal = _estado;
-  _acionaCom = !_estado;
+  if(inputMode == INPUT) _currentState = LOW;
+  else if(inputMode == INPUT_PULLUP) _currentState = HIGH;
+  
+  if(contactLogic == 1) _currentState = !_currentState;     // 0 = NO(NormalyOpen) / 1 = NC(NormalyClosed)
+  // reset properties
+  _lastSign = _currentState;
+  _triggersWith = !_currentState;
 }
 
-void Interruptor::monitoraMudanca(void (*callback)()) {         // deve ser chamado continuamente no loop para atualizar o estado
-  bool sinalAtual = digitalRead(_pino);
+void Interruptor::checkChange(void (*callback)(void)) {     // call on loop main
+  bool signRead = digitalRead(_pin);
 
-  if(sinalAtual != _ultimoSinal) {
-    _ultimoSinal = sinalAtual;
-    _tempoUltimoSinal = millis();
+  if(signRead != _lastSign) {
+    _lastSign = signRead;
+    _lastSignTime = millis();
   }
-  if((millis() - _tempoUltimoSinal) > _tempoConsiderarMudanca) {
-    if(sinalAtual != _estado) {
-      _estado = sinalAtual;
+  if((millis() - _lastSignTime) > _filter) {
+    if(signRead != _currentState) {
+      _currentState = signRead;
       callback();
     }
   }
 }
 
-bool Interruptor::estaAcionado() {
-  if(_estado == _acionaCom) return true;
+bool Interruptor::isActivated() {
+  if(_currentState == _triggersWith) return true;
   else return false;
 }

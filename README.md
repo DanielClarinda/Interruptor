@@ -1,7 +1,10 @@
-Desenvolvido por DACLA Automação - https://dacla-automacao.github.io/site/
-Instagram - https://www.instagram.com/daclaautomacao/
+Desenvolvido por DACLA Automação
+https://dacla-automacao.github.io/site/
 
-Biblioteca para leitura de sinais de entradas digitais através de;
+Instagram
+https://www.instagram.com/daclaautomacao/
+
+Biblioteca para leitura de sinais de entradas digitais de Arduinos através de;
 - Botões
 - Sensores
 - Micro-Switch
@@ -10,22 +13,22 @@ Biblioteca para leitura de sinais de entradas digitais através de;
 - Reles
 - etc.
 
-Seja contato/coletor NO(Normalmente Aberto) ou NC(Normalmente fechado).
+Seja com a lógica de contato/coletor NO(Normalmente Aberto) ou NC(Normalmente fechado).
 
-Construtor(byte pin, byte mode, bool colector, unsigned int deBounceTime);
+Construtor(byte pin, byte inputMode, bool contactLogic, unsigned int deBounceTime);
 - pin           =   Entrada digital do arduino
-- mode		      =   Modo do Resistor interno (INPUT ou INPUT_PULLUP)
-- colector	    =   NO(Aberto) valor=0 ou NC(Fechado) valor=1
-- deBounceTime	=   Tempo em ms para evitar o efeito Bouncing (Recomendado 15ms)
+- pinMode		    =   Modo do Resistor interno (INPUT ou INPUT_PULLUP)
+- contactLogic  =   NO(Aberto) valor=0 ou NC(Fechado) valor=1
+- deBounceTime	=   Filtro em ms para evitar o efeito Bouncing (Recomendado 15ms)
 
-Métodos do obbjeto
+Métodos do objeto
 
-void monitoraMudanca(void (*callback)());          // deve ser chamado continuamente no loop para atualizar o estado do objeto
-- Passar uma função callback sem argumentos e que não retorna nada.
-- A função sempre será chamada quando houver uma mudança de nivel lógico (equivale ao CHANGE do attackInterrupt).
+void checkChange(void (*callback)(void));          // call on loop main
+- Passar uma função callback sem argumentos e sem retorno.
+- A função sempre será chamada caso considere uma mudança de estado lógico considerando o filtro deBounce (equivale ao CHANGE do attackInterrupt).
 - Filtro deBounce difinido no contrutor.
 
-estaAcionado();
+isActivated();
 - Retorna true or false do estado do objeto com base nas definições do construtor (nivel lógico da entrada, input mode e lógica do contato).
 
 Tabela verdade
